@@ -1,0 +1,90 @@
+﻿application
+{  
+    disk-root=$"c:\nfx\"
+
+    object-store 
+    { 
+        name="Main Object Store"
+        guid="76F44831-E92A-42BB-9294-E806300405C9"
+        object-life-span-ms="180000"
+        bucket-count="1024"
+                 
+        provider
+        { 
+            name="Disk Object Store Provider"
+            type="NFX.ApplicationModel.Volatile.NOPObjectStoreProvider"
+            //load-limit="0"
+            //root-path=$(/$disk-root)
+            ////format="msbinary"
+            //known-types 
+            //{
+            //  known{ type="BusinessLogic.PatientRecord, BusinessLogic" }
+            //}
+        }
+    }
+  
+    glue
+    {   
+        bindings
+        {
+            binding
+            {
+                name="sync"
+                type="NFX.Glue.Native.SyncBinding, NFX"
+				server-transport
+				{
+					rcv-buf-size=131072
+					snd-buf-size=131072
+					rcv-timeout=15000
+					snd-timeout=15000
+				}
+            }
+        }
+        
+        servers
+        {
+            server
+            {
+                node="sync://localhost:8080"
+                contract-servers=$"
+					Glue.Server.Services.EchoService, Glue.Server;
+					Glue.Server.Services.StatefulService, Glue.Server;
+					Glue.Server.Services.PersonService, Glue.Server;
+					Glue.Server.Services.HighLoadService, Glue.Server;
+					Glue.Server.Services.SecureService, Glue.Server"
+            }
+        }
+    }
+	
+	security
+	{
+		users
+		{
+			user
+			{
+				name="Clinton"
+				description="Bill Clinton"
+				id="clinton"
+				password="89c246298be2b6113fb10ba80f3c6956" // phash billy
+				rights
+				{
+					specialized	{ superman {level=1} president {level=1} }
+					gov	{ executive {level=0} } // he is not president
+				}
+			}
+			
+			user
+			{
+				name="Obama"
+				description="Barak Obama"
+				id="obama"
+				password="10189466c646898c1fcf2363b5cf038d" // phash chicago
+				rights
+				{
+					specialized	{ superman {level=1} president {level=1} }
+					gov	{ executive {level=1} } // he is current president
+				}
+			}
+	    }
+	}
+}
